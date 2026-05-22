@@ -752,7 +752,125 @@ function GratitudeSection({ gratitudes, setGratitudes, onSave }) {
   );
 }
 
+// ─────────────────────────────────────────────
+//  CHANGE YOUR ACCESS CODE HERE ↓
+//  This is the code your buyers will type to unlock the journal.
+//  Pick something easy to remember, like: WAHEGURU2025
+const ACCESS_CODE = "WAHEGURU2025";
+// ─────────────────────────────────────────────
+
+function PasswordGate({ onUnlock }) {
+  const [input, setInput] = useState("");
+  const [error, setError] = useState(false);
+  const [shake, setShake] = useState(false);
+
+  const tryUnlock = () => {
+    if (input.trim().toUpperCase() === ACCESS_CODE.toUpperCase()) {
+      onUnlock();
+    } else {
+      setError(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 600);
+    }
+  };
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: "radial-gradient(ellipse at 20% 20%, #1a1208 0%, #0d0d0d 50%, #0a0f0a 100%)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontFamily: "Georgia, serif", padding: 24,
+    }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Sans+Gurmukhi:wght@400;600&display=swap');
+        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+        @keyframes shimmer { 0%{background-position:200% center;} 100%{background-position:-200% center;} }
+        @keyframes shake { 0%,100%{transform:translateX(0);} 20%,60%{transform:translateX(-8px);} 40%,80%{transform:translateX(8px);} }
+        .unlock-input:focus { border-color: #C9A84C !important; outline: none; }
+        .unlock-btn:hover { opacity: 0.88; }
+        .unlock-btn:active { transform: scale(0.97); }
+      `}</style>
+
+      <div style={{ maxWidth: 400, width: "100%", textAlign: "center" }}>
+        {/* Floating Khanda */}
+        <div style={{ animation: "float 6s ease-in-out infinite", display: "inline-block", marginBottom: 24 }}>
+          <svg width="64" height="64" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+            <circle cx="50" cy="50" r="46" stroke="#C9A84C" strokeWidth="3" fill="none" opacity="0.4" />
+            <line x1="50" y1="8" x2="50" y2="92" stroke="#C9A84C" strokeWidth="3.5" strokeLinecap="round" />
+            <ellipse cx="50" cy="50" rx="18" ry="22" stroke="#C9A84C" strokeWidth="2.5" fill="none" />
+            <path d="M20 30 Q50 50 80 30" stroke="#C9A84C" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M20 70 Q50 50 80 70" stroke="#C9A84C" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+          </svg>
+        </div>
+
+        {/* Title */}
+        <h1 style={{
+          fontFamily: "'Playfair Display', serif", fontSize: 36, fontWeight: 700,
+          marginBottom: 8, lineHeight: 1.2,
+          background: "linear-gradient(135deg, #C9A84C, #e8d5a3, #8B6914)",
+          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+        }}>Chardi Kala</h1>
+
+        <p style={{ fontFamily: "'Noto Sans Gurmukhi', sans-serif", fontSize: 14, color: "#C9A84C", marginBottom: 6, letterSpacing: 1 }}>ਚੜ੍ਹਦੀ ਕਲਾ</p>
+        <p style={{ color: "#888", fontSize: 14, marginBottom: 36, lineHeight: 1.7 }}>
+          Your Gurbani Healing Journal.<br />Enter your access code to begin.
+        </p>
+
+        {/* Input box */}
+        <div style={{ animation: shake ? "shake 0.5s ease" : "none" }}>
+          <input
+            className="unlock-input"
+            type="text"
+            value={input}
+            onChange={e => { setInput(e.target.value); setError(false); }}
+            onKeyDown={e => e.key === "Enter" && tryUnlock()}
+            placeholder="Enter your access code"
+            autoComplete="off"
+            spellCheck="false"
+            style={{
+              width: "100%", padding: "14px 18px",
+              background: "#1a1208", border: `1px solid ${error ? "#E24B4A" : "#C9A84C44"}`,
+              borderRadius: 12, color: "#e8d5a3", fontSize: 16,
+              fontFamily: "Georgia, serif", textAlign: "center",
+              letterSpacing: "0.15em", marginBottom: 12,
+              transition: "border-color 0.2s",
+            }}
+          />
+
+          {error && (
+            <p style={{ color: "#E24B4A", fontSize: 13, marginBottom: 12, fontStyle: "italic" }}>
+              Incorrect code. Please check your purchase email and try again.
+            </p>
+          )}
+
+          <button
+            className="unlock-btn"
+            onClick={tryUnlock}
+            style={{
+              width: "100%", padding: "14px",
+              background: "linear-gradient(135deg, #C9A84C, #8B6914)",
+              border: "none", borderRadius: 12,
+              color: "#1a1208", fontSize: 16, fontWeight: 700,
+              fontFamily: "'Playfair Display', serif",
+              cursor: "pointer", letterSpacing: "0.5px",
+              transition: "opacity 0.2s, transform 0.15s",
+            }}
+          >
+            Open Journal ☬
+          </button>
+        </div>
+
+        <p style={{ color: "#444", fontSize: 12, marginTop: 24, lineHeight: 1.7 }}>
+          Purchased and need help?<br />
+          Contact us at <span style={{ color: "#C9A84C88" }}>sikhhistorysakhi.com</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function GurbaniJournal() {
+  const [unlocked, setUnlocked] = useState(false);
   const [screen, setScreen] = useState("home");
   const [selectedShabad, setSelectedShabad] = useState(null);
   const [journalEntries, setJournalEntries] = useState({});
@@ -828,6 +946,8 @@ export default function GurbaniJournal() {
     background: "transparent", border: `1px solid #444`,
     color: S.muted, fontSize: 13, cursor: "pointer", fontFamily: "Georgia, serif",
   };
+
+  if (!unlocked) return <PasswordGate onUnlock={() => setUnlocked(true)} />;
 
   return (
     <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse at 20% 20%, #1a1208 0%, #0d0d0d 50%, #0a0f0a 100%)", color: S.text, fontFamily: "Georgia, 'Times New Roman', serif" }}>
@@ -1196,3 +1316,4 @@ export default function GurbaniJournal() {
     </div>
   );
 }
+
